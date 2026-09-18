@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GastroPlus · Multi-restaurante</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f3ec; --panel:#ffffff; --ink:#2b2620; --ink-soft:#5a5245; --ink-faint:#948c7c;
+    --line:#e4ddcd; --accent:#a8531f; --accent-2:#5c6e3f; --maize:#d9a441; --danger:#a83e3e;
+    --radius:12px; --shadow:0 1px 2px rgba(43,38,32,.04), 0 6px 18px rgba(43,38,32,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --bg:#1c1a16; --panel:#26221c; --ink:#ece6d8; --ink-soft:#c3baa4; --ink-faint:#8a8172; --line:#3a352b; --shadow:0 1px 2px rgba(0,0,0,.2), 0 6px 18px rgba(0,0,0,.3); }
+  }
+  :root[data-theme="dark"]{ --bg:#1c1a16; --panel:#26221c; --ink:#ece6d8; --ink-soft:#c3baa4; --ink-faint:#8a8172; --line:#3a352b; --shadow:0 1px 2px rgba(0,0,0,.2), 0 6px 18px rgba(0,0,0,.3); }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Public Sans',sans-serif;font-size:14px;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:'Fraunces',serif;margin:0 0 8px;letter-spacing:-0.01em;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  button{font-family:inherit;cursor:pointer;transition:filter .12s ease, background-color .12s ease, border-color .12s ease;}
+  input,select,textarea{font-family:inherit;font-size:13.5px;padding:9px 11px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);width:100%;transition:border-color .12s ease;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
+  label{display:block;font-size:11.5px;font-weight:700;color:var(--ink-soft);margin-bottom:5px;text-transform:uppercase;letter-spacing:.02em;}
+  .field{margin-bottom:14px;}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:9px 16px;border-radius:9px;font-weight:600;font-size:13px;}
+  .btn:hover{filter:brightness(0.97);}
+  .btn-primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .btn-primary:hover{filter:brightness(1.08);}
+  .btn-ghost{background:transparent;}
+  .btn-ghost:hover{background:rgba(168,83,31,.08);}
+  .btn-danger{background:var(--danger);border-color:var(--danger);color:#fff;}
+  .btn-sm{padding:6px 10px;font-size:12px;}
+  .center-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:
+    radial-gradient(circle at 15% 10%, rgba(217,164,65,.10), transparent 45%),
+    radial-gradient(circle at 85% 90%, rgba(92,110,63,.10), transparent 45%), var(--bg);}
+  .auth-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:34px;width:100%;max-width:380px;box-shadow:var(--shadow);}
+  .auth-card h1{font-size:24px;}
+  .auth-sub{color:var(--ink-soft);font-size:13px;margin-bottom:20px;}
+  .auth-switch{text-align:center;margin-top:14px;font-size:13px;color:var(--ink-soft);}
+  .auth-switch a{color:var(--accent);cursor:pointer;font-weight:600;}
+  .error-box{background:rgba(168,62,62,.12);color:var(--danger);border:1px solid rgba(168,62,62,.3);padding:9px 13px;border-radius:9px;font-size:12.5px;margin-bottom:14px;}
+  header.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:10;}
+  .brand{font-family:'Fraunces',serif;font-weight:700;font-size:19px;}
+  .brand .tenant{font-family:'Public Sans',sans-serif;font-weight:500;color:var(--ink-soft);font-size:12.5px;}
+  .who{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink-soft);}
+  .role-pill{background:var(--maize);color:#3a2c0e;padding:3px 10px;border-radius:99px;font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.02em;}
+  nav.tabs{display:flex;gap:4px;flex-wrap:wrap;padding:10px 22px;border-bottom:1px solid var(--line);background:var(--panel);}
+  nav.tabs button{border:none;background:transparent;padding:8px 13px;border-radius:8px;font-weight:600;color:var(--ink-soft);font-size:13px;}
+  nav.tabs button:hover{background:rgba(168,83,31,.08);color:var(--ink);}
+  nav.tabs button.active{background:var(--accent);color:#fff;}
+  main{padding:24px;max-width:1100px;margin:0 auto;}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px;}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);}
+  .stat .k{font-size:11px;color:var(--ink-faint);text-transform:uppercase;font-weight:700;letter-spacing:.03em;}
+  .stat .v{font-size:21px;font-weight:700;font-family:'IBM Plex Mono',monospace;margin-top:6px;}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:18px;box-shadow:var(--shadow);}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);}
+  th{font-size:10.5px;text-transform:uppercase;color:var(--ink-faint);letter-spacing:.03em;font-weight:700;}
+  td.num{text-align:right;font-family:'IBM Plex Mono',monospace;}
+  tr:hover td{background:rgba(168,83,31,.05);}
+  .row-actions{display:flex;gap:6px;justify-content:flex-end;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .modal-back{position:fixed;inset:0;background:rgba(20,17,10,.5);backdrop-filter:blur(1px);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto;z-index:50;}
+  .modal{background:var(--panel);border-radius:16px;padding:24px;width:100%;max-width:560px;box-shadow:0 10px 40px rgba(0,0,0,.25);}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+  .x-close{border:none;background:transparent;font-size:20px;color:var(--ink-faint);line-height:1;}
+  .x-close:hover{color:var(--ink);}
+  .pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:10.5px;font-weight:700;letter-spacing:.02em;}
+  .pill.ok{background:rgba(92,110,63,.15);color:var(--accent-2);}
+  .pill.bad{background:rgba(168,62,62,.15);color:var(--danger);}
+  .empty{color:var(--ink-faint);font-size:13px;padding:22px 0;text-align:center;}
+  .ing-row{display:grid;grid-template-columns:2fr 1fr auto;gap:8px;margin-bottom:8px;align-items:end;}
+  .hint{color:var(--ink-faint);font-size:12px;margin-top:10px;line-height:1.5;}
+  .banner{background:rgba(217,164,65,.15);border:1px solid rgba(217,164,65,.4);border-radius:10px;padding:10px 14px;font-size:12.5px;margin-bottom:16px;}
+  nav.subnav{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;}
+  nav.subnav button{border:1px solid var(--line);background:var(--panel);padding:6px 12px;border-radius:99px;font-size:12.5px;font-weight:600;color:var(--ink-soft);}
+  nav.subnav button.active{background:var(--accent-2);border-color:var(--accent-2);color:#fff;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+"use strict";
+
+/* ---------------------------------------------------------------------
+   GastroPlus · multi-tenant edition
+   Cada restaurante que "compra" GastroPlus se registra como un tenant
+   independiente, con su propia base de datos y sus propios usuarios.
+   Roles: admin (total) · contabilidad · ventas · produccion
+--------------------------------------------------------------------- */
+
+var API = '/api';
+var state = {
+  screen: 'login', // login | registro | app
+  token: localStorage.getItem('gp_token') || null,
+  user: null, tenant: null,
+  tab: 'dashboard',
+  contabSub: 'asientos',
+  contabPeriod: 'mes',
+  data: {}, // cache por coleccion
+  modal: null,
+  error: '',
+  info: '',
+  resetToken: null,
+  loading: false
+};
+
+var ROLE_LABEL = { admin:'Acceso total', contabilidad:'Contabilidad', ventas:'Ventas y facturación', produccion:'Recetas, mermas y producción' };
+var CATS_ING = ['Proteínas','Vegetales','Lácteos','Granos y tubérculos','Condimentos y especias','Bebidas e insumos de bar','Panadería','Otros'];
+var CATS_REC = ['Entradas','Sopas','Platos Fuertes','Postres','Bebidas','Panadería','Guarniciones'];
+var UNIDADES = ['kg','g','l','ml','unidad'];
+var TIPOS_CUENTA = ['Activo','Pasivo','Patrimonio','Ingreso','Costo','Gasto'];
+var FORMAS_PAGO = ['Efectivo','Tarjeta de crédito/débito','Transferencia','Otro'];
+var FORMAS_PAGO_COMPRA = ['Efectivo','Transferencia','Crédito (cuenta por pagar)'];
+var TIPOS_COMPRA = ['Ingredientes','Gasto'];
+var MOTIVOS_MERMA = ['Vencimiento','Manipulación / caída','Cocción / preparación','Control de calidad','Robo o pérdida','Otro'];
+
+var TABS = [
+  { key:'dashboard', label:'Inicio', roles:['admin','contabilidad','ventas','produccion'] },
+  { key:'facturacion', label:'Facturación', roles:['admin','ventas'] },
+  { key:'clientes', label:'Clientes', roles:['admin','ventas'] },
+  { key:'productos', label:'Productos', roles:['admin','ventas'] },
+  { key:'recetario', label:'Recetario', roles:['admin','produccion'] },
+  { key:'inventario', label:'Inventario', roles:['admin','produccion'] },
+  { key:'mermas', label:'Mermas', roles:['admin','produccion'] },
+  { key:'compras', label:'Compras', roles:['admin','produccion'] },
+  { key:'contabilidad', label:'Contabilidad', roles:['admin','contabilidad'] },
+  { key:'usuarios', label:'Usuarios', roles:['admin'] }
+];
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function fmtMoney(n){ n = Number(n)||0; return '$' + n.toFixed(2); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function uid(){ return 'tmp-' + Math.random().toString(36).slice(2); }
+
+function myRole(){ return state.user ? state.user.rol : null; }
+function canSee(tab){ return tab.roles.indexOf(myRole()) >= 0; }
+
+/* ---------------- API ---------------- */
+function api(method, path, body){
+  var headers = { 'Content-Type':'application/json' };
+  if(state.token) headers.Authorization = 'Bearer ' + state.token;
+  return fetch(API + path, { method:method, headers:headers, body: body!=null ? JSON.stringify(body) : undefined })
+    .then(function(r){
+      return r.json().catch(function(){ return {}; }).then(function(json){
+        if(!r.ok){ var e = new Error(json.message || json.error || ('HTTP '+r.status)); e.payload = json; throw e; }
+        return json;
+      });
+    });
+}
+function list(coleccion){ return api('GET', '/data/'+coleccion); }
+function createDoc(coleccion, data){ return api('POST', '/data/'+coleccion, data); }
+function putDoc(coleccion, id, data){ return api('PUT', '/data/'+coleccion+'/'+id, data); }
+function patchDoc(coleccion, id, data){ return api('PATCH', '/data/'+coleccion+'/'+id, data); }
+function delDoc(coleccion, id){ return api('DELETE', '/data/'+coleccion+'/'+id); }
+
+/* ---------------- data cache / loading ---------------- */
+var LOADED_FOR_TAB = {
+  dashboard: ['invoices','mermas','recipes','ingredients'],
+  facturacion: ['invoices','clients','products','recipes','settings'],
+  clientes: ['clients'],
+  productos: ['products'],
+  recetario: ['recipes','ingredients'],
+  inventario: ['ingredients','lots'],
+  mermas: ['mermas','ingredients'],
+  compras: ['purchases','ingredients','settings'],
+  contabilidad: ['accounts','journal_entries','settings'],
+  usuarios: []
+};
+
+function loadTabData(){
+  var cols = LOADED_FOR_TAB[state.tab] || [];
+  state.loading = true; render();
+  var jobs = cols.map(function(c){
+    if(c === 'settings') return api('GET','/data/settings/empresa').then(function(d){ state.data.settings = d; }).catch(function(){ state.data.settings = {ivaPct:15}; });
+    return list(c).then(function(d){ state.data[c] = d; });
+  });
+  if(state.tab === 'usuarios'){
+    jobs.push(api('GET','/usuarios').then(function(d){ state.data.usuarios = d; }));
+    jobs.push(api('GET','/billing/planes').then(function(d){ state.data.billing = d; }).catch(function(){ state.data.billing = {}; }));
+  }
+  Promise.all(jobs).then(function(){ state.loading = false; render(); }).catch(function(e){ state.loading = false; state.error = e.message; render(); });
+}
+
+function D(c){ return state.data[c] || []; }
+function byId(c, id){ return D(c).find(function(x){ return x.id === id; }); }
+
+/* ---------------- auth screens ---------------- */
+function renderLogin(){
+  return '<div class="center-screen"><div class="auth-card">' +
+    '<h1>GastroPlus</h1><div class="auth-sub">Ingresa a tu restaurante</div>' +
+    (state.error ? '<div class="error-box">'+esc(state.error)+'</div>' : '') +
+    '<form id="login-form">' +
+      '<div class="field"><label>Correo</label><input required type="email" name="email"></div>' +
+      '<div class="field"><label>Contraseña</label><input required type="password" name="password"></div>' +
+      '<button class="btn btn-primary" type="submit" style="width:100%;">Ingresar</button>' +
+    '</form>' +
+    '<div class="auth-switch">¿Tu restaurante aún no tiene cuenta? <a data-go="registro">Regístralo aquí</a></div>' +
+    '<div class="auth-switch">¿Olvidaste tu contraseña? <a data-go="recuperar">Recupérala aquí</a></div>' +
+  '</div></div>';
+}
+function renderRecuperar(){
+  return '<div class="center-screen"><div class="auth-card">' +
+    '<h1>Recuperar contraseña</h1><div class="auth-sub">Te enviaremos un enlace a tu correo para elegir una nueva.</div>' +
+    (state.error ? '<div class="error-box">'+esc(state.error)+'</div>' : '') +
+    (state.info ? '<div class="banner">'+esc(state.info)+'</div>' : '') +
+    '<form id="recuperar-form">' +
+      '<div class="field"><label>Correo</label><input required type="email" name="email"></div>' +
+      '<button class="btn btn-primary" type="submit" style="width:100%;">Enviar enlace</button>' +
+    '</form>' +
+    '<div class="auth-switch"><a data-go="login">Volver a iniciar sesión</a></div>' +
+  '</div></div>';
+}
+function renderRestablecer(){
+  return '<div class="center-screen"><div class="auth-card">' +
+    '<h1>Elegir nueva contraseña</h1>' +
+    (state.error ? '<div class="error-box">'+esc(state.error)+'</div>' : '') +
+    '<form id="restablecer-form">' +
+      '<div class="field"><label>Nueva contraseña</label><input required type="password" name="password" minlength="6"></div>' +
+      '<button class="btn btn-primary" type="submit" style="width:100%;">Guardar contraseña</button>' +
+    '</form>' +
+  '</div></div>';
+}
+function renderRegistro(){
+  return '<div class="center-screen"><div class="auth-card">' +
+    '<h1>Crea tu restaurante</h1><div class="auth-sub">Tu propio espacio en GastroPlus, aislado del resto de restaurantes.</div>' +
+    (state.error ? '<div class="error-box">'+esc(state.error)+'</div>' : '') +
+    '<form id="registro-form">' +
+      '<div class="field"><label>Nombre del restaurante</label><input required type="text" name="restauranteNombre"></div>' +
+      '<div class="field"><label>Tu nombre (administrador)</label><input required type="text" name="adminNombre"></div>' +
+      '<div class="field"><label>Correo</label><input required type="email" name="email"></div>' +
+      '<div class="field"><label>Contraseña</label><input required type="password" name="password" minlength="6"></div>' +
+      '<button class="btn btn-primary" type="submit" style="width:100%;">Crear cuenta</button>' +
+    '</form>' +
+    '<div class="auth-switch">¿Ya tienes cuenta? <a data-go="login">Inicia sesión</a></div>' +
+  '</div></div>';
+}
+
+/* ---------------- app shell ---------------- */
+function renderShell(){
+  var visibleTabs = TABS.filter(canSee);
+  return '<header class="topbar">' +
+    '<div class="brand">GastroPlus <span class="tenant">· '+esc(state.tenant?state.tenant.nombre:'')+'</span></div>' +
+    '<div class="who"><span>'+esc(state.user.nombre)+'</span><span class="role-pill">'+esc(ROLE_LABEL[state.user.rol]||state.user.rol)+'</span>' +
+      '<button class="btn btn-ghost btn-sm" id="logout-btn">Salir</button></div>' +
+  '</header>' +
+  (state.user.emailVerificado===false ? '<div class="banner" style="border-radius:0;margin:0;">Aún no verificas tu correo. <a data-go-noop="1" id="resend-verif-btn" style="cursor:pointer;font-weight:700;color:var(--accent);">Reenviar enlace de verificación</a></div>' : '') +
+  '<nav class="tabs">' + visibleTabs.map(function(t){
+    return '<button data-tab="'+t.key+'" class="'+(state.tab===t.key?'active':'')+'">'+esc(t.label)+'</button>';
+  }).join('') + '</nav>' +
+  '<main id="main-area">' + (state.loading ? '<div class="empty">Cargando…</div>' : renderTab()) + '</main>' +
+  (state.modal ? ('<div class="modal-back" id="modal-back">'+state.modal.html+'</div>') : '');
+}
+
+function renderTab(){
+  switch(state.tab){
+    case 'dashboard': return renderDashboard();
+    case 'facturacion': return renderFacturacion();
+    case 'clientes': return renderGenericList('clients', clientCols(), 'Clientes');
+    case 'productos': return renderGenericList('products', productCols(), 'Productos');
+    case 'recetario': return renderRecetario();
+    case 'inventario': return renderInventario();
+    case 'mermas': return renderMermas();
+    case 'compras': return renderCompras();
+    case 'contabilidad': return renderContabilidad();
+    case 'usuarios': return renderUsuarios();
+    default: return '';
+  }
+}
+
+function renderDashboard(){
+  var ventasHoy = D('invoices').filter(function(v){ return v.estado==='emitida' && v.fecha===todayISO(); });
+  var totalHoy = ventasHoy.reduce(function(s,v){ return s+Number(v.total||0); }, 0);
+  var mermasMes = D('mermas').filter(function(m){ return (m.fecha||'').slice(0,7)===todayISO().slice(0,7); });
+  var costoMermas = mermasMes.reduce(function(s,m){ return s+Number(m.costoEstimado||0); }, 0);
+  return '<div class="stats">' +
+    '<div class="stat"><div class="k">Ventas de hoy</div><div class="v">'+fmtMoney(totalHoy)+'</div></div>' +
+    '<div class="stat"><div class="k">Facturas hoy</div><div class="v">'+ventasHoy.length+'</div></div>' +
+    '<div class="stat"><div class="k">Mermas del mes</div><div class="v">'+fmtMoney(costoMermas)+'</div></div>' +
+    '<div class="stat"><div class="k">Recetas en recetario</div><div class="v">'+D('recipes').length+'</div></div>' +
+  '</div>' +
+  '<div class="banner">Cuenta de restaurante: <strong>'+esc(state.tenant.nombre)+'</strong>. Tus datos son privados — ningún otro restaurante que use GastroPlus puede verlos.</div>';
+}
+
+/* ------- generic CRUD list (clientes/productos) ------- */
+function clientCols(){
+  return [
+    {name:'nombre', label:'Nombre', type:'text', required:true},
+    {name:'identificacion', label:'Identificación', type:'text'},
+    {name:'tipoId', label:'Tipo ID', type:'select', options:['Cédula','RUC','Pasaporte','Consumidor Final']},
+    {name:'email', label:'Email', type:'text'},
+    {name:'telefono', label:'Teléfono', type:'text'}
+  ];
+}
+function productCols(){
+  return [
+    {name:'nombre', label:'Nombre', type:'text', required:true},
+    {name:'categoria', label:'Categoría', type:'select', options:['Bebidas','Otros']},
+    {name:'precioUnitario', label:'Precio ($)', type:'number', required:true},
+    {name:'ivaPct', label:'IVA (%)', type:'number', required:true}
+  ];
+}
+
+function renderGenericList(coleccion, cols, titulo){
+  var rows = D(coleccion);
+  return '<div class="panel"><div class="panel-head"><h2>'+esc(titulo)+'</h2>' +
+    '<button class="btn btn-primary btn-sm" data-generic-new="'+coleccion+'">+ Nuevo</button></div>' +
+    (rows.length ? ('<table><thead><tr>'+cols.map(function(c){return '<th>'+esc(c.label)+'</th>';}).join('')+'<th></th></tr></thead><tbody>' +
+      rows.map(function(r){
+        return '<tr>'+cols.map(function(c){ return '<td>'+esc(r[c.name])+'</td>'; }).join('') +
+          '<td class="row-actions"><button class="btn btn-ghost btn-sm" data-generic-edit="'+coleccion+':'+r.id+'">Editar</button>' +
+          (r.id==='consumidor-final' ? '' : '<button class="btn btn-ghost btn-sm" data-generic-del="'+coleccion+':'+r.id+'">Eliminar</button>') + '</td></tr>';
+      }).join('') + '</tbody></table>') : '<div class="empty">Sin registros aún.</div>') +
+  '</div>';
+}
+
+function genericFormModal(coleccion, cols, id){
+  var r = id ? byId(coleccion, id) : {};
+  var body = cols.map(function(c){
+    var val = r[c.name] != null ? r[c.name] : '';
+    if(c.type === 'select'){
+      return '<div class="field"><label>'+esc(c.label)+'</label><select name="'+c.name+'">' + c.options.map(function(o){return '<option '+(val===o?'selected':'')+'>'+esc(o)+'</option>';}).join('') + '</select></div>';
+    }
+    return '<div class="field"><label>'+esc(c.label)+'</label><input '+(c.required?'required':'')+' type="'+(c.type==='number'?'number':'text')+'" '+(c.type==='number'?'step="0.01"':'')+' name="'+c.name+'" value="'+esc(val)+'"></div>';
+  }).join('');
+  return '<div class="modal"><div class="modal-head"><h2>'+(id?'Editar':'Nuevo')+'</h2><button class="x-close" data-close="1">&times;</button></div>' +
+    '<form id="generic-form" data-coleccion="'+coleccion+'" data-id="'+(id||'')+'">' + body +
+    '<div style="display:flex;justify-content:flex-end;gap:8px;"><button type="button" class="btn btn-ghost" data-close="1">Cancelar</button><button class="btn btn-primary" type="submit">Guardar</button></div>' +
+    '</form></div>';
+}
+
+/* ------- recetario ------- */
+function renderRecetario(){
+  var rows = D('recipes');
+  return '<div class="panel"><div class="panel-head"><h2>Recetario</h2><button class="btn btn-primary btn-sm" data-recipe-new="1">+ Nueva receta</button></div>' +
+    (rows.length ? rows.map(function(r){
+      var c = recipeCost(r);
+      return '<div class="panel" style="margin-bottom:10px;"><div class="panel-head">' +
+        '<div><div style="font-size:11px;color:var(--ink-faint);text-transform:uppercase;">'+esc(r.categoria||'')+'</div><h3>'+esc(r.nombre)+'</h3></div>' +
+        '<div class="row-actions"><span class="mono">Costo/porción '+fmtMoney(c.costoPorcion)+' · PVP '+fmtMoney(c.pvpFinal)+'</span>' +
+        '<button class="btn btn-ghost btn-sm" data-recipe-edit="'+r.id+'">Editar</button>' +
+        '<button class="btn btn-ghost btn-sm" data-recipe-del="'+r.id+'">Eliminar</button>' +
+        '<button class="btn btn-primary btn-sm" data-recipe-produce="'+r.id+'">Producir</button></div>' +
+        '</div></div>';
+    }).join('') : '<div class="empty">Aún no hay recetas.</div>') +
+  '</div>';
+}
+function recipeCost(r){
+  var total = 0;
+  (r.ingredientes||[]).forEach(function(it){
+    var ing = byId('ingredients', it.ingredienteId);
+    if(!ing) return;
+    var factor = 1 - ((Number(ing.mermaPct)||0)/100); if(factor<=0) factor=0.01;
+    total += (Number(ing.costoUnitario)||0) * Number(it.cantidad||0) / factor;
+  });
+  var porciones = Number(r.porcionesBase)||1;
+  var costoPorcion = total/porciones;
+  var fc = (Number(r.foodCostObjetivo)||30)/100;
+  var pvpSug = costoPorcion/fc;
+  var pvpFinal = r.pvpManual!=null && r.pvpManual!=='' ? Number(r.pvpManual) : pvpSug;
+  return { total:total, costoPorcion:costoPorcion, pvpSugerido:pvpSug, pvpFinal:pvpFinal };
+}
+var MISE_EN_PLACE_TEMPLATES = {
+  'Entradas': ['Lavar y desinfectar vegetales y hierbas frescas.','Cortar y porcionar los elementos de guarnición según ficha.','Preparar salsas o aderezos base con anticipación.'],
+  'Sopas': ['Preparar el sofrito base.','Tener el caldo o fondo base listo y caliente.','Pesar y porcionar proteínas, granos o tubérculos.'],
+  'Platos Fuertes': ['Porcionar y pesar las proteínas principales según ficha.','Marinar o sazonar con la anticipación indicada.','Precalentar plancha, horno o parrilla.'],
+  'Postres': ['Pesar con precisión ingredientes secos y líquidos.','Atemperar mantequilla, huevos y lácteos.','Preparar y enmantequillar moldes o bandejas.'],
+  'Bebidas': ['Enfriar copas o vasos y verificar hielo.','Preparar jarabes o infusiones base.','Cortar y reservar guarniciones para el montaje.'],
+  'Panadería': ['Pesar con precisión harinas, líquidos y levaduras.','Verificar temperatura de agua/leche y activación de levadura.','Precalentar el horno con anticipación.'],
+  'Guarniciones': ['Lavar, pelar y cortar vegetales según corte de ficha.','Pesar porciones individuales.','Reservar en refrigeración hasta el montaje.']
+};
+
+function recipeFormModal(id){
+  var r = id ? byId('recipes', id) : { nombre:'', categoria:CATS_REC[0], porcionesBase:4, foodCostObjetivo:30, pvpManual:'', pasos:'', misEnPlace:'', tips:'', ingredientes:[] };
+  var ings = D('ingredients').slice().sort(function(a,b){return a.nombre.localeCompare(b.nombre);});
+  var rows = (r.ingredientes||[]).map(function(it,idx){ return ingRowHtml(idx, it, ings); }).join('');
+  return '<div class="modal" style="max-width:640px;"><div class="modal-head"><h2>'+(id?'Editar receta':'Nueva receta')+'</h2><button class="x-close" data-close="1">&times;</button></div>' +
+    '<form id="recipe-form" data-id="'+(id||'')+'">' +
+      '<div class="two-col"><div class="field"><label>Nombre</label><input required type="text" name="nombre" value="'+esc(r.nombre)+'"></div>' +
+      '<div class="field"><label>Categoría</label><select name="categoria">'+CATS_REC.map(function(c){return '<option '+(r.categoria===c?'selected':'')+'>'+c+'</option>';}).join('')+'</select></div></div>' +
+      '<div class="two-col"><div class="field"><label>Porciones base</label><input required type="number" name="porcionesBase" value="'+r.porcionesBase+'"></div>' +
+      '<div class="field"><label>Food cost objetivo (%)</label><input required type="number" step="0.5" name="foodCostObjetivo" value="'+r.foodCostObjetivo+'"></div></div>' +
+      '<div class="field"><label>PVP manual (opcional)</label><input type="number" step="0.01" name="pvpManual" value="'+(r.pvpManual||'')+'"></div>' +
+      '<label>Ingredientes</label><div id="ing-rows">'+rows+'</div>' +
+      '<button type="button" class="btn btn-ghost btn-sm" id="add-ing-row" style="margin-bottom:12px;">+ Agregar ingrediente</button>' +
+      '<div class="field"><label style="display:flex;justify-content:space-between;"><span>Mise en place</span><button type="button" class="btn btn-ghost btn-sm" id="suggest-mep">Sugerir según categoría</button></label>' +
+        '<textarea name="misEnPlace" rows="3">'+esc(r.misEnPlace)+'</textarea></div>' +
+      '<div class="field"><label>Procedimiento (uno por línea)</label><textarea name="pasos" rows="4">'+esc(r.pasos)+'</textarea></div>' +
+      '<div style="display:flex;justify-content:flex-end;gap:8px;"><button type="button" class="btn btn-ghost" data-close="1">Cancelar</button><button class="btn btn-primary" type="submit">Guardar</button></div>' +
+    '</form></div>';
+}
+function ingRowHtml(idx, it, ings){
+  return '<div class="ing-row" data-ing-row="'+idx+'">' +
+    '<div><select data-field="ingredienteId"><option value="">— ingrediente —</option>' + ings.map(function(o){return '<option value="'+o.id+'" '+(it.ingredienteId===o.id?'selected':'')+'>'+esc(o.nombre)+'</option>';}).join('') + '</select></div>' +
+    '<div><input type="number" step="0.001" placeholder="cantidad" data-field="cantidad" value="'+(it.cantidad!=null?it.cantidad:'')+'"></div>' +
+    '<div><button type="button" class="btn btn-ghost btn-sm" data-remove-row>✕</button></div>' +
+  '</div>';
+}
+
+/* ------- inventario ------- */
+function renderInventario(){
+  var ings = D('ingredients');
+  return '<div class="panel"><div class="panel-head"><h2>Inventario · Maestro de ingredientes</h2><button class="btn btn-primary btn-sm" data-ing-new="1">+ Nuevo ingrediente</button></div>' +
+    (ings.length ? '<table><thead><tr><th>Ingrediente</th><th>Categoría</th><th class="num">Costo</th><th class="num">Stock</th><th></th></tr></thead><tbody>' +
+      ings.map(function(i){
+        var stock = D('lots').filter(function(l){return l.ingredienteId===i.id;}).reduce(function(s,l){return s+Number(l.cantidad||0);},0);
+        var bajo = i.stockMinimo!=null && stock < Number(i.stockMinimo);
+        return '<tr><td>'+esc(i.nombre)+'</td><td>'+esc(i.categoria)+'</td><td class="num">'+fmtMoney(i.costoUnitario)+'</td>' +
+          '<td class="num">'+stock.toFixed(2)+' '+esc(i.unidadCompra)+' '+(bajo?'<span class="pill bad">bajo</span>':'')+'</td>' +
+          '<td class="row-actions"><button class="btn btn-ghost btn-sm" data-ing-edit="'+i.id+'">Editar</button><button class="btn btn-ghost btn-sm" data-ing-del="'+i.id+'">Eliminar</button></td></tr>';
+      }).join('') + '</tbody></table>' : '<div class="empty">Aún no hay ingredientes.</div>') +
+  '</div>';
+}
+function ingredientFormModal(id){
+  var i = id ? byId('ingredients', id) : { nombre:'', categoria:CATS_ING[0], unidadCompra:'kg', costoUnitario:'', mermaPct:0, proveedor:'', perecedero:false, vidaUtilDias:'', stockMinimo:'' };
+  return '<div class="modal"><div class="modal-head"><h2>'+(id?'Editar ingrediente':'Nuevo ingrediente')+'</h2><button class="x-close" data-close="1">&times;</button></div>' +
+    '<form id="ing-form" data-id="'+(id||'')+'">' +
+      '<div class="field"><label>Nombre</label><input required type="text" name="nombre" value="'+esc(i.nombre)+'"></div>' +
+      '<div class="two-col"><div class="field"><label>Categoría</label><select name="categoria">'+CATS_ING.map(function(c){return '<option '+(i.categoria===c?'selected':'')+'>'+c+'</option>';}).join('')+'</select></div>' +
+      '<div class="field"><label>Unidad</label><select name="unidadCompra">'+UNIDADES.map(function(u){return '<option '+(i.unidadCompra===u?'selected':'')+'>'+u+'</option>';}).join('')+'</select></div></div>' +
+      '<div class="two-col"><div class="field"><label>Costo unitario</label><input required type="number" step="0.01" name="costoUnitario" value="'+i.costoUnitario+'"></div>' +
+      '<div class="field"><label>Merma (%)</label><input type="number" step="0.5" name="mermaPct" value="'+i.mermaPct+'"></div></div>' +
+      '<div class="field"><label>Proveedor</label><input type="text" name="proveedor" value="'+esc(i.proveedor)+'"></div>' +
+      '<div class="two-col"><div class="field"><label>Stock mínimo</label><input type="number" step="0.1" name="stockMinimo" value="'+(i.stockMinimo||'')+'"></div>' +
+      '<div class="field"><label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" style="width:auto;" name="perecedero" '+(i.perecedero?'checked':'')+'> Perecedero</label></div></div>' +
+      '<div class="field"><label>Vida útil (días)</label><input type="number" name="vidaUtilDias" value="'+(i.vidaUtilDias||'')+'"></div>' +
+      '<div style="display:flex;justify-content:flex-end;gap:8px;"><button type="button" class="btn btn-ghost" data-close="1">Cancelar</button><button class="btn btn-primary" type="submit">Guardar</button></div>' +
+    '</form></div>';
+}
+
+/* ------- mermas ------- */
+function renderMermas(){
+  var rows = D('mermas').slice().sort(function(a,b){return (b.fecha||'').localeCompare(a.fecha||'');});
+  return '<div class="panel"><div class="panel-head"><h2>Mermas</h2><button class="btn btn-primary btn-sm" data-merma-new="1">+ Registrar merma</button></div>' +
+    (rows.length ? '<table><thead><tr><th>Fecha</th><th>Ingrediente</th><th class="num">Cantidad</th><th>Motivo</th><th class="num">Costo</th></tr></thead><tbody>' +
+      rows.map(function(m){ var ing=byId('ingredients', m.ingredienteId); return '<tr><td>'+esc(m.fecha)+'</td><td>'+esc(ing?ing.nombre:'—')+'</td><td class="num">'+m.cantidad+'</td><td>'+esc(m.motivo)+'</td><td class="num">'+fmtMoney(m.costoEstimado)+'</td></tr>'; }).join('') +
+      '</tbody></table>' : '<div class="empty">Sin mermas registradas.</div>') +
+  '</div>';
+}
+function mermaFormModal(){
+  var ings = D('ingredients').slice().sort(function(a,b){return a.nombre.localeCompare(b.nombre);});
+  return '<div class="modal"><div class="modal-head"><h2>Registrar merma</h2><button class="x-close" data-close="1">&times;</button></div>' +
+    '<form id="merma-form">' +
+      '<div class="field"><label>Ingrediente</label><select required name="ingredienteId">' + ings.map(function(o){return '<option value="'+o.id+'">'+esc(o.nombre)+'</option>';}).join('') + '</select></div>' +
+      '<div class="two-col"><div class="field"><label>Cantidad</label><input required type="number" step="0.001" name="cantidad"></div>' +
+      '<div class="field"><label>Fecha</label><input required type="date" name="fecha" value="'+todayISO()+'"></div></div>' +
+      '<div class="field"><label>Motivo</label><select name="motivo">'+MOTIVOS_MERMA.map(function(m){return '<option>'+m+'</option>';}).join('')+'</select></div>' +
+      '<div style="display:flex;justify-content:flex-end;gap:8px;"><button type="button" class="btn btn-ghost" data-close="1">Cancelar</button><button class="btn btn-primary" type="submit">Registrar</button></div>' +
+    '</form></div>';
+}
+
+/* ------- compras ------- */
+function renderCompras(){
+  var rows = D('purchases').slice().sort(function(a,b){return (b.fecha||'').localeCompare(a.fecha||'');});
+  return '<div class="panel"><div class="panel-head"><h2>Compras</h2><button class="btn btn-primary btn-sm" data-purchase-new="1">+ Nueva compra</button></div>' +
+    (rows.length ? '<table><thead><tr><th>N°</th><th>Fecha</th><th>Proveedor</th><th class="num">Total</th><th>Estado</th><th></th></tr></thead><tbody>' +
+      rows.map(function(p){ return '<tr><td class="mono">'+esc(p.numero)+'</td><td>'+esc(p.fecha)+'</td><td>'+esc(p.proveedor||'—')+'</td><td class="num">'+fmtMoney(p.total)+'</td>' +
+        '<td><span class="pill '+(p.estado==='anulada'?'bad':'ok')+'">'+esc(p.estado)+'</span></td>' +
+        '<td class="row-actions">'+(p.estado!=='anulada'?'<button class="btn btn-ghost btn-sm" data-purchase-void="'+p.id+'">Anular</button>':'')+'</td></tr>'; }).join('') +
+      '</tbody></table>' : '<div class="empty">Sin compras registradas.</div>') +
+  '</div>';
+}
+function purchaseFormModal(){
+  var ings = D('ingredients').slice().sort(function(a,b){return a.nombre.localeCompare(b.nombre);});
+  return '<div class="modal"><div class="modal-head"><h2>Nueva compra</h2><button class="x-close" data-close="1">&times;</button></div>' +
+    '<form id="purchase-form">' +
+      '<div class="two-col"><div class="field"><label>Fecha</label><input required type="date" name="fecha" value="'+todayISO()+'"></div>' +
+      '<div class="field"><label>Proveedor</label><input type="text" name="proveedor"></div></div>' +
+      '<div class="two-col"><div class="field"><label>Forma de pago</label><select name="formaPago">'+FORMAS_PAGO_COMPRA.map(function(f){return '<option>'+f+'</option>';}).join('')+'</select></div>' +
+      '<div class="field"><label>Ingrediente</label><select required name="ingredienteId">'+ings.map(function(o){return '<option value="'+o.id+'">'+esc(o.nombre)+'</option>';}).join('')+'</select></div></div>' +
+      '<div class="two-col"><div class="field"><label>Cantidad</label><input required type="number" step="0.001" name="cantidad"></div>' +
+      '<div class="field"><label>Costo unitario</label><input required type="number" step="0.01" name="costoUnitario"></div></div>' +
+      '<div class="field"><label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" style="width:auto;" name="actualizarCosto" checked> Actualizar costo del ingrediente</label></div>' +
+      '<div class="field"><label>IVA (%)</label><input type="number" step="0.5" name="ivaPct" value="'+((state.data.settings&&state.data.settings.ivaPct)||15)+'"></div>' +
+      '<div style="display:flex;justify-content:flex-end;gap:8px;"><button type="button" class="btn btn-ghost" data-close="1">Cancelar</button><button class="btn btn-primary" type="submit">Registrar compra</button></div>' +
+    '</form></div>';
+}
+
+/* ------- facturacion ------- */
+function renderFacturacion(){
+  var rows = D('invoices').slice().sort(function(a,b){return (b.numero||'').localeCompare(a.numero||'');});
+  return '<div class="panel"><div class="panel-head"><h2>Facturación</h2><button class="btn btn-primary btn-sm" data-invoice-new="1">+ Nueva factura</button></div>' +
+    (rows.length ? '<table><thead><tr><th>N°</th><th>Fecha</th><th>Cliente</th><th class="num">Total</th><th>Estado</th><th></th></tr></thead><tbody>' +
+      rows.map(function(v){ return '<tr><td class="mono">'+esc(v.numero)+'</td><td>'+esc(v.fecha)+'</td><td>'+esc(v.clienteNombreSnapshot)+'</td><td class="num">'+fmtMoney(v.total)+'</td>' +
+        '<td><span class="pill '+(v.estado==='anulada'?'bad':'ok')+'">'+esc(v.estado)+'</span></td>' +
+        '<td class="row-actions">'+(v.estado!=='anulada'?'<button class="btn btn-ghost btn-sm" data-invoice-void="'+v.id+'">Anular</button>':'')+'</td></tr>'; }).join('') +
+      '</tbody></table>' : '<div class="empty">Sin facturas emitidas.</div>') +
+    '<div class="hint">Documento interno — no reemplaza la facturación electrónica autorizada por el SRI.</div>' +
+  '</div>';
+}
+function invoiceFormModal(){
+  var clients = D('clients').slice().sort(function(a,b){return a.nombre.localeCompare(b.nombre);});
+  var prods = D('products'); var recs = D('recipes');
+  return '<div class="modal"><div class="modal-head"><h2>Nueva factura</h2><button class="x-close" data-close="1">&times;</button></div>' +
+    '<form id="invoice-form">' +
+      '<div class="two-col"><div class="field"><label>Cliente</label><select name="clienteId">'+clients.map(function(c){return '<option value="'+c.id+'" '+(c.id==='consumidor-final'?'selected':'')+'>'+esc(c.nombre)+'</option>';}).join('')+'</select></div>' +
+      '<div class="field"><label>Fecha</label><input required type="date" name="fecha" value="'+todayISO()+'"></div></div>' +
+      '<div class="field"><label>Forma de pago</label><select name="formaPago">'+FORMAS_PAGO.map(function(f){return '<option>'+f+'</option>';}).join('')+'</select></div>' +
+      '<div class="two-col"><div class="field"><label>Tipo de ítem</label><select id="inv-item-tipo"><option value="producto">Producto</option><option value="receta">Receta</option></select></div>' +
+      '<div class="field"><label>Ítem</label><select id="inv-item-ref">' + prods.map(function(p){return '<option value="'+p.id+'" data-precio="'+p.precioUnitario+'" data-iva="'+p.ivaPct+'" data-nombre="'+esc(p.nombre)+'">'+esc(p.nombre)+'</option>';}).join('') + '</select></div></div>' +
+      '<div class="two-col"><div class="field"><label>Cantidad</label><input type="number" step="0.01" id="inv-item-cant" value="1"></div>' +
+      '<button type="button" class="btn btn-ghost" id="inv-add-item" style="align-self:end;">+ Agregar ítem</button></div>' +
+      '<div id="inv-items-list"></div>' +
+      '<div class="hint" id="inv-total">Total: $0.00</div>' +
+      '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px;"><button type="button" class="btn btn-ghost" data-close="1">Cancelar</button><button class="btn btn-primary" type="submit">Emitir factura</button></div>' +
+    '</form></div>';
+}
+
+/* ------- contabilidad ------- */
+var CTA_CAJA='1.1.01', CTA_BANCOS='1.1.02', CTA_INVENTARIO='1.1.04', CTA_IVA_CREDITO='1.1.05', CTA_IVA_POR_PAGAR='2.1.02';
+var CONTAB_SUBTABS = [
+  {key:'asientos', label:'Asientos'},
+  {key:'libromayor', label:'Libro Mayor'},
+  {key:'balancecomp', label:'Balance de Comprobación'},
+  {key:'estadoresultados', label:'Estado de Resultados'},
+  {key:'balancegeneral', label:'Balance General'},
+  {key:'iva', label:'IVA'},
+  {key:'plancuentas', label:'Plan de Cuentas'}
+];
+
+function naturalezaDeTipo(tipo){ return (tipo==='Activo'||tipo==='Costo'||tipo==='Gasto') ? 'Deudora' : 'Acreedora'; }
+function accountByCodigo(cod){ return D('accounts').find(function(a){return a.codigo===cod;}); }
+function periodRange(){
+  if(state.contabPeriod !== 'todo'){
+    var ym = todayISO().slice(0,7);
+    return { from: ym+'-01', to: todayISO() };
+  }
+  return { from:null, to:null };
+}
+function entriesInRange(from, to){
+  return D('journal_entries').filter(function(e){
+    if(from && (e.fecha||'') < from) return false;
+    if(to && (e.fecha||'') > to) return false;
+    return true;
+  });
+}
+function movimientosDeCuenta(codigo, entries){
+  var rows = [];
+  (entries||D('journal_entries')).forEach(function(e){
+    (e.lineas||[]).forEach(function(l){ if(l.cuentaCodigo===codigo) rows.push({entry:e, debe:Number(l.debe)||0, haber:Number(l.haber)||0}); });
+  });
+  rows.sort(function(a,b){ return (a.entry.fecha||'').localeCompare(b.entry.fecha||'') || (Number(a.entry.numero)-Number(b.entry.numero)); });
+  return rows;
+}
+function saldoCuenta(codigo, entries){
+  var acc = accountByCodigo(codigo);
+  var rows = movimientosDeCuenta(codigo, entries);
+  var debe = rows.reduce(function(s,r){return s+r.debe;},0);
+  var haber = rows.reduce(function(s,r){return s+r.haber;},0);
+  var saldo = acc && naturalezaDeTipo(acc.tipo)==='Deudora' ? (debe-haber) : (haber-debe);
+  return { debe:debe, haber:haber, saldo:saldo };
+}
+function estadoResultados(entries){
+  var res = { ingresos:0, costos:0, gastos:0 };
+  D('accounts').forEach(function(acc){
+    if(!acc.activa) return;
+    var s = saldoCuenta(acc.codigo, entries);
+    if(acc.tipo==='Ingreso') res.ingresos += s.saldo;
+    else if(acc.tipo==='Costo') res.costos += s.saldo;
+    else if(acc.tipo==='Gasto') res.gastos += s.saldo;
+  });
+  res.utilidadBruta = res.ingresos - res.costos;
+  res.utilidadOperativa = res.utilidadBruta - res.gastos;
+  return res;
+}
+function balanceGeneral(){
+  var res = { activos:[], pasivos:[], patrimonio:[], totalActivos:0, totalPasivos:0, totalPatrimonio:0 };
+  D('accounts').filter(function(a){return a.activa;}).forEach(function(a){
+    var s = saldoCuenta(a.codigo);
+    if(Math.abs(s.saldo) < 0.005) return;
+    if(a.tipo==='Activo'){ res.activos.push({a:a,saldo:s.saldo}); res.totalActivos += s.saldo; }
+    else if(a.tipo==='Pasivo'){ res.pasivos.push({a:a,saldo:s.saldo}); res.totalPasivos += s.saldo; }
+    else if(a.tipo==='Patrimonio'){ res.patrimonio.push({a:a,saldo:s.saldo}); res.totalPatrimonio += s.saldo; }
+  });
+  res.utilidadEjercicio = estadoResultados().utilidadOperativa;
+  res.totalPasivoPatrimonio = res.totalPasivos + res.totalPatrimonio + res.utilidadEjercicio;
+  return res;
+}
+
+function renderContabilidad(){
+  var sub = state.contabSub || 'asientos';
+  var html = '<nav class="subnav">' + CONTAB_SUBTABS.map(function(t){
+    return '<button data-contab-sub="'+t.key+'" class="'+(sub===t.key?'active':'')+'">'+t.label+'</button>';
+  }).join('') + '</nav>';
+  switch(sub){
+    case 'libromayor': html += renderLibroMayor(); break;
+    case 'balancecomp': html += renderBalanceComprobacion(); break;
+    case 'estadoresultados': html += renderEstadoResultados(); break;
+    case 'balancegeneral': html += renderBalanceGeneral(); break;
+    case 'iva': html += renderIva(); break;
+    case 'plancuentas': html += renderPlanCuentas(); break;
+    default: html += renderAsientos();
+  }
+  return html;
+}
+
+function periodPicker(){
+  return '<div style="display:flex;gap:6px;margin-bottom:14px;">' +
+    '<button class="btn btn-sm '+(state.contabPeriod!=='todo'?'btn-primary':'btn-ghost')+'" data-contab-period="mes">Mes actual</button>' +
+    '<button class="btn btn-sm '+(state.contabPeriod==='todo'?'btn-primary':'btn-ghost')+'" data-contab-period="todo">Todo el histórico</button>' +
+  '</div>';
+}
+
+function renderAsientos(){
+  var entries = D('journal_entries').slice().sort(function(a,b){return Number(b.numero)-Number(a.numero);});
+  return '<div class="panel"><h2>Libro diario / asientos</h2>' +
+    (entries.length ? entries.map(function(e){
+      return '<div style="border-bottom:1px solid var(--line);padding:10px 0;"><div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-soft);">' +
+        '<span class="mono">Asiento #'+e.numero+' · '+esc(e.fecha)+' · '+esc(e.origen)+'</span><span>'+esc(e.glosa)+'</span></div>' +
+        '<table style="margin-top:4px;"><tbody>' + (e.lineas||[]).map(function(l){
+          var acc = accountByCodigo(l.cuentaCodigo);
+          return '<tr><td>'+esc(l.cuentaCodigo)+' — '+esc(acc?acc.nombre:'')+'</td><td class="num">'+(l.debe?fmtMoney(l.debe):'')+'</td><td class="num">'+(l.haber?fmtMoney(l.haber):'')+'</td></tr>';
+        }).join('') + '</tbody></table></div>';
+    }).join('') : '<div class="empty">Sin asientos todavía. Se generan automáticamente con ventas, compras, mermas y nómina.</div>') +
+  '</div>';
+}
+
+function renderLibroMayor(){
+  var accounts = D('accounts').slice().sort(function(a,b){return a.codigo.localeCompare(b.codigo);});
+  return periodPicker() + accounts.map(function(a){
+    var range = periodRange();
+    var rows = movimientosDeCuenta(a.codigo, entriesInRange(range.from, range.to));
+    if(!rows.length) return '';
+    var s = saldoCuenta(a.codigo, entriesInRange(range.from, range.to));
+    return '<div class="panel"><h3 style="font-size:14px;">'+esc(a.codigo)+' — '+esc(a.nombre)+' <span class="mono" style="font-weight:400;color:var(--ink-soft);">(saldo '+fmtMoney(s.saldo)+')</span></h3>' +
+      '<table><thead><tr><th>Fecha</th><th>Glosa</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead><tbody>' +
+      rows.map(function(r){ return '<tr><td>'+esc(r.entry.fecha)+'</td><td>'+esc(r.entry.glosa)+'</td><td class="num">'+(r.debe?fmtMoney(r.debe):'')+'</td><td class="num">'+(r.haber?fmtMoney(r.haber):'')+'</td></tr>'; }).join('') +
+      '</tbody></table></div>';
+  }).join('') || '<div class="empty">Sin movimientos.</div>';
+}
+
+function renderBalanceComprobacion(){
+  var accounts = D('accounts').filter(function(a){return a.activa;}).slice().sort(function(a,b){return a.codigo.localeCompare(b.codigo);});
+  var range = periodRange(); var entries = entriesInRange(range.from, range.to);
+  var totDebe=0, totHaber=0;
+  var rows = accounts.map(function(a){ var s = saldoCuenta(a.codigo, entries); totDebe+=s.debe; totHaber+=s.haber; return {a:a, s:s}; }).filter(function(r){ return r.s.debe>0.005 || r.s.haber>0.005; });
+  return periodPicker() + '<div class="panel"><h2>Balance de comprobación</h2>' +
+    (rows.length ? '<table><thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th><th class="num">Saldo</th></tr></thead><tbody>' +
+      rows.map(function(r){ return '<tr><td>'+esc(r.a.codigo)+' — '+esc(r.a.nombre)+'</td><td class="num">'+fmtMoney(r.s.debe)+'</td><td class="num">'+fmtMoney(r.s.haber)+'</td><td class="num">'+fmtMoney(r.s.saldo)+'</td></tr>'; }).join('') +
+      '<tr style="font-weight:700;"><td>Totales</td><td class="num">'+fmtMoney(totDebe)+'</td><td class="num">'+fmtMoney(totHaber)+'</td><td></td></tr></tbody></table>' : '<div class="empty">Sin movimientos en el período.</div>') +
+  '</div>';
+}
+
+function renderEstadoResultados(){
+  var range = periodRange(); var res = estadoResultados(entriesInRange(range.from, range.to));
+  return periodPicker() + '<div class="panel"><h2>Estado de resultados</h2>' +
+    '<div class="stats">' +
+      '<div class="stat"><div class="k">Ingresos</div><div class="v">'+fmtMoney(res.ingresos)+'</div></div>' +
+      '<div class="stat"><div class="k">Costo de ventas</div><div class="v">'+fmtMoney(res.costos)+'</div></div>' +
+      '<div class="stat"><div class="k">Utilidad bruta</div><div class="v">'+fmtMoney(res.utilidadBruta)+'</div></div>' +
+      '<div class="stat"><div class="k">Gastos</div><div class="v">'+fmtMoney(res.gastos)+'</div></div>' +
+      '<div class="stat"><div class="k">Utilidad operativa</div><div class="v" style="color:var(--accent);">'+fmtMoney(res.utilidadOperativa)+'</div></div>' +
+    '</div></div>';
+}
+
+function renderBalanceGeneral(){
+  var b = balanceGeneral();
+  function seccion(titulo, items, total){
+    return '<h3 style="font-size:13.5px;margin-top:14px;">'+titulo+'</h3>' +
+      (items.length ? '<table><tbody>' + items.map(function(it){ return '<tr><td>'+esc(it.a.codigo)+' — '+esc(it.a.nombre)+'</td><td class="num">'+fmtMoney(it.saldo)+'</td></tr>'; }).join('') +
+      '<tr style="font-weight:700;"><td>Total</td><td class="num">'+fmtMoney(total)+'</td></tr></tbody></table>' : '<div class="empty">—</div>');
+  }
+  var cuadra = Math.abs(b.totalActivos - b.totalPasivoPatrimonio) < 0.05;
+  return '<div class="panel"><h2>Balance general</h2>' +
+    seccion('Activos', b.activos, b.totalActivos) +
+    seccion('Pasivos', b.pasivos, b.totalPasivos) +
+    seccion('Patrimonio', b.patrimonio, b.totalPatrimonio) +
+    '<div class="hint">Utilidad del ejercicio (no cerrada): '+fmtMoney(b.utilidadEjercicio)+'</div>' +
+    '<div class="hint" style="margin-top:8px;">Activos '+fmtMoney(b.totalActivos)+' '+(cuadra?'= ':'≠ ')+'Pasivos + Patrimonio + Utilidad '+fmtMoney(b.totalPasivoPatrimonio)+' '+(cuadra?'<span class="pill ok">cuadra</span>':'<span class="pill bad">revisar</span>')+'</div>' +
+  '</div>';
+}
+
+function renderIva(){
+  var range = periodRange(); var entries = entriesInRange(range.from, range.to);
+  var ivaVentas = saldoCuenta(CTA_IVA_POR_PAGAR, entries).saldo;
+  var ivaCompras = saldoCuenta(CTA_IVA_CREDITO, entries).saldo;
+  var neto = ivaVentas - ivaCompras;
+  return periodPicker() + '<div class="panel"><h2>IVA</h2><div class="stats">' +
+    '<div class="stat"><div class="k">IVA cobrado en ventas</div><div class="v">'+fmtMoney(ivaVentas)+'</div></div>' +
+    '<div class="stat"><div class="k">IVA crédito tributario (compras)</div><div class="v">'+fmtMoney(ivaCompras)+'</div></div>' +
+    '<div class="stat"><div class="k">'+(neto>=0?'IVA a pagar al SRI':'Crédito tributario a favor')+'</div><div class="v" style="color:var(--accent);">'+fmtMoney(Math.abs(neto))+'</div></div>' +
+  '</div><div class="hint">Cálculo referencial a partir de los asientos contables del período. Verifica siempre contra tu declaración oficial en el formulario 104 del SRI.</div></div>';
+}
+
+function renderPlanCuentas(){
+  var accounts = D('accounts').slice().sort(function(a,b){return a.codigo.localeCompare(b.codigo);});
+  return '<div class="panel"><div class="panel-head"><h2>Plan de cuentas</h2><button class="btn btn-primary btn-sm" data-account-new="1">+ Nueva cuenta</button></div>' +
+    (accounts.length ? '<table><thead><tr><th>Código</th><th>Nombre</th><th>Tipo</th><th>Naturaleza</th></tr></thead><tbody>' +
+      accounts.map(function(a){return '<tr><td class="mono">'+esc(a.codigo)+'</td><td>'+esc(a.nombre)+'</td><td>'+esc(a.tipo)+'</td><td>'+naturalezaDeTipo(a.tipo)+'</td></tr>';}).join('') + '</tbody></table>' : '<div class="empty">Sin cuentas.</div>') +
+  '</div>';
+}
+function accountFormModal(){
+  return '<div class="modal"><div class="modal-head"><h2>Nueva cuenta</h2><button class="x-close" data-close="1">&times;</button></div>' +
+    '<form id="account-form">' +
+      '<div class="field"><label>Código (ej. 1.1.06)</label><input required type="text" name="codigo"></div>' +
+      '<div class="field"><label>Nombre</label><input required type="text" name="nombre"></div>' +
+      '<div class="field"><label>Tipo</label><select name="tipo">'+TIPOS_CUENTA.map(function(t){return '<option>'+t+'</option>';}).join('')+'</select></div>' +
+      '<div style="display:flex;justify-content:flex-end;gap:8px;"><button type="button" class="btn btn-ghost" data-close="1">Cancelar</button><button class="btn btn-primary" type="submit">Guardar</button></div>' +
+    '</form></div>';
+}
+
+/* ------- usuarios (admin) ------- */
+function renderUsuarios(){
+  var rows = state.data.usuarios || [];
+  var plan = state.data.billing || {};
+  return '<div class="panel"><div class="panel-head"><h2>Plan de suscripción</h2></div>' +
+    '<p style="margin:0 0 12px;color:var(--ink-soft);">Plan actual: <strong>'+esc((plan.planActual||'trial'))+'</strong></p>' +
+    (plan.disponible ? '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+        Object.keys(plan.planes||{}).map(function(k){ return '<button class="btn btn-primary btn-sm" data-plan-checkout="'+k+'">Cambiar a '+esc(plan.planes[k].label)+'</button>'; }).join('') +
+      '</div>' : '<div class="hint">Los cobros con tarjeta todavía no están configurados en este servidor (falta conectar Stripe) — ver README.</div>') +
+    '</div>' +
+    '<div class="panel"><div class="panel-head"><h2>Usuarios de '+esc(state.tenant.nombre)+'</h2><button class="btn btn-primary btn-sm" data-user-new="1">+ Nuevo usuario</button></div>' +
+    '<table><thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th></th></tr></thead><tbody>' +
+    rows.map(function(u){ return '<tr><td>'+esc(u.nombre)+'</td><td>'+esc(u.email)+'</td><td>'+esc(ROLE_LABEL[u.rol]||u.rol)+'</td>' +
+      '<td><span class="pill '+(u.activo?'ok':'bad')+'">'+(u.activo?'activo':'inactivo')+'</span></td>' +
+      '<td class="row-actions"><button class="btn btn-ghost btn-sm" data-user-edit="'+u.id+'">Editar</button></td></tr>'; }).join('') +
+    '</tbody></table></div>' +
+    '<div class="hint">Cada usuario ve sólo los módulos que su rol permite: Acceso total, Contabilidad, Ventas y facturación, o Recetas/mermas/producción.</div>';
+}
+function userFormModal(id){
+  var u = id ? (state.data.usuarios||[]).find(function(x){return x.id===id;}) : null;
+  return '<div class="modal"><div class="modal-head"><h2>'+(id?'Editar usuario':'Nuevo usuario')+'</h2><button class="x-close" data-close="1">&times;</button></div>' +
+    '<form id="user-form" data-id="'+(id||'')+'">' +
+      '<div class="field"><label>Nombre</label><input required type="text" name="nombre" value="'+esc(u?u.nombre:'')+'"></div>' +
+      (id ? '' : '<div class="field"><label>Correo</label><input required type="email" name="email"></div>') +
+      '<div class="field"><label>'+(id?'Nueva contraseña (opcional)':'Contraseña')+'</label><input '+(id?'':'required')+' type="password" name="password" minlength="6"></div>' +
+      '<div class="field"><label>Rol</label><select name="rol">' + Object.keys(ROLE_LABEL).map(function(r){return '<option value="'+r+'" '+(u&&u.rol===r?'selected':'')+'>'+ROLE_LABEL[r]+'</option>';}).join('') + '</select></div>' +
+      (id ? '<div class="field"><label style="display:flex;align-items:center;gap:8px;"><input type="checkbox" style="width:auto;" name="activo" '+(u&&u.activo?'checked':'')+'> Usuario activo</label></div>' : '') +
+      '<div style="display:flex;justify-content:flex-end;gap:8px;"><button type="button" class="btn btn-ghost" data-close="1">Cancelar</button><button class="btn btn-primary" type="submit">Guardar</button></div>' +
+    '</form></div>';
+}
+
+/* ---------------- render + events ---------------- */
+function render(){
+  var app = document.getElementById('app');
+  var html = state.screen === 'app' ? renderShell()
+    : state.screen === 'registro' ? renderRegistro()
+    : state.screen === 'recuperar' ? renderRecuperar()
+    : state.screen === 'restablecer' ? renderRestablecer()
+    : renderLogin();
+  app.innerHTML = html;
+  bindEvents();
+}
+
+function openModal(html){ state.modal = { html: html }; render(); }
+function closeModal(){ state.modal = null; render(); }
+
+function bindEvents(){
+  var root = document.getElementById('app');
+
+  var loginForm = root.querySelector('#login-form');
+  if(loginForm) loginForm.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var fd = new FormData(loginForm);
+    api('POST','/auth/login', {email:fd.get('email'), password:fd.get('password')}).then(function(res){
+      state.token = res.token; localStorage.setItem('gp_token', res.token);
+      state.user = res.user; state.tenant = res.tenant; state.screen = 'app'; state.tab='dashboard'; state.error='';
+      render(); loadTabData();
+    }).catch(function(e){ state.error = e.message; render(); });
+  });
+
+  var regForm = root.querySelector('#registro-form');
+  if(regForm) regForm.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var fd = new FormData(regForm);
+    api('POST','/auth/registro', {restauranteNombre:fd.get('restauranteNombre'), adminNombre:fd.get('adminNombre'), email:fd.get('email'), password:fd.get('password')}).then(function(res){
+      state.token = res.token; localStorage.setItem('gp_token', res.token);
+      state.user = res.user; state.tenant = res.tenant; state.screen = 'app'; state.tab='dashboard'; state.error='';
+      render(); loadTabData();
+    }).catch(function(e){ state.error = e.message; render(); });
+  });
+
+  var recForm = root.querySelector('#recuperar-form');
+  if(recForm) recForm.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var fd = new FormData(recForm);
+    api('POST','/auth/solicitar-recuperacion', {email:fd.get('email')}).then(function(res){
+      state.info = res.message + (res.enlaceDesarrollo ? (' (modo desarrollo — enlace: '+res.enlaceDesarrollo+')') : '');
+      state.error=''; render();
+    }).catch(function(e){ state.error = e.message; render(); });
+  });
+
+  var restForm = root.querySelector('#restablecer-form');
+  if(restForm) restForm.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var fd = new FormData(restForm);
+    api('POST','/auth/restablecer', {token: state.resetToken, password: fd.get('password')}).then(function(){
+      state.screen = 'login'; state.error=''; state.info='Contraseña actualizada. Ya puedes iniciar sesión.'; render();
+    }).catch(function(e){ state.error = e.message; render(); });
+  });
+
+  var resendBtn = root.querySelector('#resend-verif-btn');
+  if(resendBtn) resendBtn.addEventListener('click', function(){
+    api('POST','/auth/reenviar-verificacion').then(function(res){
+      alert(res.yaVerificado ? 'Tu correo ya estaba verificado.' : ('Te reenviamos el enlace.' + (res.enlaceDesarrollo ? ('\n(modo desarrollo — enlace: '+res.enlaceDesarrollo+')') : '')));
+    }).catch(function(e){ alert(e.message); });
+  });
+
+  root.querySelectorAll('[data-go]').forEach(function(a){ a.addEventListener('click', function(){ state.screen = a.getAttribute('data-go'); state.error=''; state.info=''; render(); }); });
+
+  var logoutBtn = root.querySelector('#logout-btn');
+  if(logoutBtn) logoutBtn.addEventListener('click', function(){
+    localStorage.removeItem('gp_token'); state.token=null; state.user=null; state.tenant=null; state.screen='login'; render();
+  });
+
+  root.querySelectorAll('[data-tab]').forEach(function(b){ b.addEventListener('click', function(){ state.tab = b.getAttribute('data-tab'); render(); loadTabData(); }); });
+
+  root.querySelectorAll('[data-close]').forEach(function(b){ b.addEventListener('click', closeModal); });
+  var back = root.querySelector('#modal-back');
+  if(back) back.addEventListener('click', function(ev){ if(ev.target === back) closeModal(); });
+
+  bindGenericCrud(root);
+  bindRecetario(root);
+  bindInventario(root);
+  bindMermas(root);
+  bindCompras(root);
+  bindFacturacion(root);
+  bindContabilidad(root);
+  bindUsuarios(root);
+}
+
+function bindGenericCrud(root){
+  var map = { clientes:['clients', clientCols()], productos:['products', productCols()] };
+  var cfg = map[state.tab];
+  if(!cfg) return;
+  root.querySelectorAll('[data-generic-new]').forEach(function(b){ b.addEventListener('click', function(){ openModal(genericFormModal(cfg[0], cfg[1])); bindGenericForm(cfg[0], cfg[1]); }); });
+  root.querySelectorAll('[data-generic-edit]').forEach(function(b){ b.addEventListener('click', function(){ var id=b.getAttribute('data-generic-edit').split(':')[1]; openModal(genericFormModal(cfg[0], cfg[1], id)); bindGenericForm(cfg[0], cfg[1]); }); });
+  root.querySelectorAll('[data-generic-del]').forEach(function(b){ b.addEventListener('click', function(){ var id=b.getAttribute('data-generic-del').split(':')[1]; if(confirm('¿Eliminar?')) delDoc(cfg[0], id).then(loadTabData); }); });
+}
+function bindGenericForm(coleccion, cols){
+  var form = document.getElementById('generic-form');
+  if(!form) return;
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var fd = new FormData(form); var id = form.getAttribute('data-id') || null;
+    var data = {}; cols.forEach(function(c){ data[c.name] = c.type==='number' ? Number(fd.get(c.name))||0 : (fd.get(c.name)||''); });
+    (id ? putDoc(coleccion, id, data) : createDoc(coleccion, data)).then(function(){ closeModal(); loadTabData(); }).catch(function(e){ alert(e.message); });
+  });
+}
+
+function bindRecetario(root){
+  if(state.tab !== 'recetario') return;
+  root.querySelectorAll('[data-recipe-new]').forEach(function(b){ b.addEventListener('click', function(){ openModal(recipeFormModal()); bindRecipeForm(); }); });
+  root.querySelectorAll('[data-recipe-edit]').forEach(function(b){ b.addEventListener('click', function(){ openModal(recipeFormModal(b.getAttribute('data-recipe-edit'))); bindRecipeForm(); }); });
+  root.querySelectorAll('[data-recipe-del]').forEach(function(b){ b.addEventListener('click', function(){ if(confirm('¿Eliminar receta?')) delDoc('recipes', b.getAttribute('data-recipe-del')).then(loadTabData); }); });
+  root.querySelectorAll('[data-recipe-produce]').forEach(function(b){ b.addEventListener('click', function(){
+    var id = b.getAttribute('data-recipe-produce'); var r = byId('recipes', id);
+    var porciones = prompt('¿Cuántas porciones vas a producir?', r.porcionesBase);
+    if(!porciones) return;
+    api('POST','/actions/produce', {recipeId:id, porciones:Number(porciones)}).then(function(){ alert('Producción registrada, inventario actualizado.'); loadTabData(); }).catch(function(e){ alert(e.message); });
+  }); });
+}
+function bindRecipeForm(){
+  var form = document.getElementById('recipe-form');
+  if(!form) return;
+  function addRow(it){
+    var ings = D('ingredients').slice().sort(function(a,b){return a.nombre.localeCompare(b.nombre);});
+    var container = form.querySelector('#ing-rows');
+    var idx = container.querySelectorAll('[data-ing-row]').length;
+    var div = document.createElement('div'); div.innerHTML = ingRowHtml(idx, it||{}, ings);
+    var node = div.firstChild; container.appendChild(node);
+    node.querySelector('[data-remove-row]').addEventListener('click', function(){ node.remove(); });
+  }
+  form.querySelector('#add-ing-row').addEventListener('click', function(){ addRow(); });
+  form.querySelectorAll('[data-remove-row]').forEach(function(b){ b.addEventListener('click', function(){ b.closest('[data-ing-row]').remove(); }); });
+  var mep = form.querySelector('[name="misEnPlace"]'); var cat = form.querySelector('[name="categoria"]');
+  form.querySelector('#suggest-mep').addEventListener('click', function(){
+    var tpl = MISE_EN_PLACE_TEMPLATES[cat.value]; if(tpl) mep.value = tpl.join('\n');
+  });
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var fd = new FormData(form); var id = form.getAttribute('data-id') || null;
+    var ingredientes = Array.prototype.map.call(form.querySelectorAll('[data-ing-row]'), function(row){
+      return { ingredienteId: row.querySelector('[data-field="ingredienteId"]').value, cantidad: parseFloat(row.querySelector('[data-field="cantidad"]').value)||0 };
+    }).filter(function(it){ return it.ingredienteId; });
+    var data = {
+      nombre: fd.get('nombre'), categoria: fd.get('categoria'), porcionesBase: Number(fd.get('porcionesBase')),
+      foodCostObjetivo: Number(fd.get('foodCostObjetivo')), pvpManual: fd.get('pvpManual')?Number(fd.get('pvpManual')):null,
+      misEnPlace: fd.get('misEnPlace')||'', pasos: fd.get('pasos')||'', ingredientes: ingredientes
+    };
+    (id ? putDoc('recipes', id, data) : createDoc('recipes', data)).then(function(){ closeModal(); loadTabData(); }).catch(function(e){ alert(e.message); });
+  });
+}
+
+function bindInventario(root){
+  if(state.tab !== 'inventario') return;
+  root.querySelectorAll('[data-ing-new]').forEach(function(b){ b.addEventListener('click', function(){ openModal(ingredientFormModal()); bindIngredientForm(); }); });
+  root.querySelectorAll('[data-ing-edit]').forEach(function(b){ b.addEventListener('click', function(){ openModal(ingredientFormModal(b.getAttribute('data-ing-edit'))); bindIngredientForm(); }); });
+  root.querySelectorAll('[data-ing-del]').forEach(function(b){ b.addEventListener('click', function(){ if(confirm('¿Eliminar ingrediente?')) delDoc('ingredients', b.getAttribute('data-ing-del')).then(loadTabData); }); });
+}
+function bindIngredientForm(){
+  var form = document.getElementById('ing-form');
+  if(!form) return;
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var fd = new FormData(form); var id = form.getAttribute('data-id') || null;
+    var data = {
+      nombre: fd.get('nombre'), categoria: fd.get('categoria'), unidadCompra: fd.get('unidadCompra'),
+      costoUnitario: Number(fd.get('costoUnitario'))||0, mermaPct: Number(fd.get('mermaPct'))||0,
+      proveedor: fd.get('proveedor')||'', perecedero: form.querySelector('[name="perecedero"]').checked,
+      vidaUtilDias: fd.get('vidaUtilDias')?Number(fd.get('vidaUtilDias')):null, stockMinimo: fd.get('stockMinimo')?Number(fd.get('stockMinimo')):null
+    };
+    (id ? putDoc('ingredients', id, data) : createDoc('ingredients', data)).then(function(){ closeModal(); loadTabData(); }).catch(function(e){ alert(e.message); });
+  });
+}
+
+function bindMermas(root){
+  if(state.tab !== 'mermas') return;
+  root.querySelectorAll('[data-merma-new]').forEach(function(b){ b.addEventListener('click', function(){ openModal(mermaFormModal()); bindMermaForm(); }); });
+}
+function bindMermaForm(){
+  var form = document.getElementById('merma-form');
+  if(!form) return;
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var fd = new FormData(form);
+    var ing = byId('ingredients', fd.get('ingredienteId'));
+    var cantidad = Number(fd.get('cantidad'))||0;
+    var factor = 1 - ((Number(ing.mermaPct)||0)/100); if(factor<=0) factor=0.01;
+    var costoEstimado = (Number(ing.costoUnitario)||0) * cantidad / factor;
+    var data = { ingredienteId: fd.get('ingredienteId'), cantidad: cantidad, fecha: fd.get('fecha'), motivo: fd.get('motivo'), costoEstimado: costoEstimado };
+    api('POST','/actions/mermas', data).then(function(){ closeModal(); loadTabData(); }).catch(function(e){ alert(e.message); });
+  });
+}
+
+function bindCompras(root){
+  if(state.tab !== 'compras') return;
+  root.querySelectorAll('[data-purchase-new]').forEach(function(b){ b.addEventListener('click', function(){ openModal(purchaseFormModal()); bindPurchaseForm(); }); });
+  root.querySelectorAll('[data-purchase-void]').forEach(function(b){ b.addEventListener('click', function(){ if(confirm('¿Anular esta compra?')) api('POST','/actions/purchases/'+b.getAttribute('data-purchase-void')+'/void').then(loadTabData).catch(function(e){alert(e.message);}); }); });
+}
+function bindPurchaseForm(){
+  var form = document.getElementById('purchase-form');
+  if(!form) return;
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var fd = new FormData(form);
+    var cantidad = Number(fd.get('cantidad'))||0, costoUnitario = Number(fd.get('costoUnitario'))||0;
+    var subtotal = cantidad*costoUnitario; var ivaPct = Number(fd.get('ivaPct'))||0; var ivaValor = subtotal*ivaPct/100;
+    var data = {
+      fecha: fd.get('fecha'), proveedor: fd.get('proveedor')||'', formaPago: fd.get('formaPago'), tipo:'Ingredientes',
+      items: [{ ingredienteId: fd.get('ingredienteId'), cantidad: cantidad, costoUnitario: costoUnitario, actualizarCosto: form.querySelector('[name="actualizarCosto"]').checked }],
+      subtotal: subtotal, ivaValor: ivaValor, total: subtotal+ivaValor, ivaPct: ivaPct
+    };
+    api('POST','/actions/purchases', data).then(function(){ closeModal(); loadTabData(); }).catch(function(e){ alert(e.message); });
+  });
+}
+
+function bindFacturacion(root){
+  if(state.tab !== 'facturacion') return;
+  root.querySelectorAll('[data-invoice-new]').forEach(function(b){ b.addEventListener('click', function(){ openModal(invoiceFormModal()); bindInvoiceForm(); }); });
+  root.querySelectorAll('[data-invoice-void]').forEach(function(b){ b.addEventListener('click', function(){ if(confirm('¿Anular esta factura?')) api('POST','/actions/invoices/'+b.getAttribute('data-invoice-void')+'/void').then(loadTabData).catch(function(e){alert(e.message);}); }); });
+}
+function bindInvoiceForm(){
+  var form = document.getElementById('invoice-form');
+  if(!form) return;
+  var items = [];
+  var tipoSel = form.querySelector('#inv-item-tipo'), refSel = form.querySelector('#inv-item-ref');
+  function refreshRefOptions(){
+    var src = tipoSel.value==='producto' ? D('products') : D('recipes');
+    refSel.innerHTML = src.map(function(o){
+      var precio = tipoSel.value==='producto' ? o.precioUnitario : recipeCost(o).pvpFinal;
+      var iva = tipoSel.value==='producto' ? o.ivaPct : ((state.data.settings&&state.data.settings.ivaPct)||15);
+      return '<option value="'+o.id+'" data-precio="'+precio+'" data-iva="'+iva+'" data-nombre="'+esc(o.nombre)+'">'+esc(o.nombre)+'</option>';
+    }).join('');
+  }
+  tipoSel.addEventListener('change', refreshRefOptions);
+  function renderItems(){
+    var totals = items.reduce(function(s,it){ var base = it.precioUnitario*it.cantidad; var iva = base*it.ivaPct/100; s.sub+=base; s.iva+=iva; return s; }, {sub:0,iva:0});
+    form.querySelector('#inv-items-list').innerHTML = items.map(function(it,idx){
+      return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px;"><span>'+esc(it.nombre)+' × '+it.cantidad+'</span><span>'+fmtMoney(it.precioUnitario*it.cantidad)+' <button type="button" data-rm-item="'+idx+'" class="btn btn-ghost btn-sm">✕</button></span></div>';
+    }).join('');
+    form.querySelector('#inv-total').textContent = 'Total: ' + fmtMoney(totals.sub+totals.iva) + ' (incluye IVA)';
+    form.querySelectorAll('[data-rm-item]').forEach(function(b){ b.addEventListener('click', function(){ items.splice(Number(b.getAttribute('data-rm-item')),1); renderItems(); }); });
+  }
+  form.querySelector('#inv-add-item').addEventListener('click', function(){
+    var opt = refSel.selectedOptions[0]; if(!opt) return;
+    items.push({ tipo: tipoSel.value, refId: opt.value, nombre: opt.getAttribute('data-nombre'), precioUnitario: Number(opt.getAttribute('data-precio')), ivaPct: Number(opt.getAttribute('data-iva')), cantidad: Number(form.querySelector('#inv-item-cant').value)||1, descuentoPct:0 });
+    renderItems();
+  });
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    if(!items.length){ alert('Agrega al menos un ítem.'); return; }
+    var fd = new FormData(form);
+    api('POST','/actions/invoices/emit', { items: items, clienteId: fd.get('clienteId'), fecha: fd.get('fecha'), formaPago: fd.get('formaPago') })
+      .then(function(){ closeModal(); loadTabData(); })
+      .catch(function(e){ alert(e.message); });
+  });
+}
+
+function bindContabilidad(root){
+  if(state.tab !== 'contabilidad') return;
+  root.querySelectorAll('[data-account-new]').forEach(function(b){ b.addEventListener('click', function(){ openModal(accountFormModal()); bindAccountForm(); }); });
+  root.querySelectorAll('[data-contab-sub]').forEach(function(b){ b.addEventListener('click', function(){ state.contabSub = b.getAttribute('data-contab-sub'); render(); }); });
+  root.querySelectorAll('[data-contab-period]').forEach(function(b){ b.addEventListener('click', function(){ state.contabPeriod = b.getAttribute('data-contab-period'); render(); }); });
+}
+function bindAccountForm(){
+  var form = document.getElementById('account-form');
+  if(!form) return;
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var fd = new FormData(form);
+    var codigo = fd.get('codigo');
+    putDoc('accounts', codigo, { codigo: codigo, nombre: fd.get('nombre'), tipo: fd.get('tipo'), activa: true })
+      .then(function(){ closeModal(); loadTabData(); }).catch(function(e){ alert(e.message); });
+  });
+}
+
+function bindUsuarios(root){
+  if(state.tab !== 'usuarios') return;
+  root.querySelectorAll('[data-user-new]').forEach(function(b){ b.addEventListener('click', function(){ openModal(userFormModal()); bindUserForm(); }); });
+  root.querySelectorAll('[data-user-edit]').forEach(function(b){ b.addEventListener('click', function(){ openModal(userFormModal(b.getAttribute('data-user-edit'))); bindUserForm(); }); });
+  root.querySelectorAll('[data-plan-checkout]').forEach(function(b){ b.addEventListener('click', function(){
+    api('POST','/billing/checkout', {plan: b.getAttribute('data-plan-checkout')}).then(function(res){ location.href = res.url; }).catch(function(e){ alert(e.message); });
+  }); });
+}
+function bindUserForm(){
+  var form = document.getElementById('user-form');
+  if(!form) return;
+  form.addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var fd = new FormData(form); var id = form.getAttribute('data-id') || null;
+    if(id){
+      var data = { nombre: fd.get('nombre'), rol: fd.get('rol'), activo: form.querySelector('[name="activo"]').checked };
+      if(fd.get('password')) data.password = fd.get('password');
+      api('PUT','/usuarios/'+id, data).then(function(){ closeModal(); loadTabData(); }).catch(function(e){ alert(e.message); });
+    } else {
+      api('POST','/usuarios', { nombre: fd.get('nombre'), email: fd.get('email'), password: fd.get('password'), rol: fd.get('rol') })
+        .then(function(){ closeModal(); loadTabData(); }).catch(function(e){ alert(e.message); });
+    }
+  });
+}
+
+/* ---------------- boot ---------------- */
+function boot(){
+  var params = new URLSearchParams(location.search);
+  var verificar = params.get('verificar');
+  var recuperar = params.get('recuperar');
+  if(verificar){
+    history.replaceState(null, '', location.pathname);
+    api('POST','/auth/verificar-correo', {token: verificar}).then(function(){
+      state.info = 'Correo verificado correctamente.';
+    }).catch(function(e){ state.error = e.message; }).then(continueBoot);
+    return;
+  }
+  if(recuperar){
+    history.replaceState(null, '', location.pathname);
+    state.resetToken = recuperar; state.screen = 'restablecer'; render();
+    return;
+  }
+  continueBoot();
+}
+function continueBoot(){
+  if(state.token){
+    api('GET','/auth/me').then(function(res){
+      state.user = res.user; state.tenant = res.tenant; state.screen = 'app'; render(); loadTabData();
+    }).catch(function(){
+      localStorage.removeItem('gp_token'); state.token = null; state.screen = 'login'; render();
+    });
+  } else { render(); }
+}
+boot();
+</script>
+</body>
+</html>
